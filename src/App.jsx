@@ -34,11 +34,11 @@ function App() {
   const [isLoadingResources, setIsLoadingResources] = useState(true);
 
   //Sounds
-  const som1 = new Audio("./src/assets/finish.mp3");
-  const mining_sound = useRef(new Audio("https://www.dropbox.com/scl/fi/48t6edlhkk13e1f4eovtr/pickaxe.mp3?rlkey=regwjsg5o07tjgrfabk6ak78x&st=yq2fnfnc&raw=1"));
-  const coin_sound = new Audio('https://uc3d3fe31d0d1888c60670d6e502.dl.dropboxusercontent.com/cd/0/inline/ClJ0O6w-PyQNXTCRhNR5tqtbkXKJa6M6l4srLPK-ndKp31UF_Z8gfENdh_GN87wyJHin2VyDUJUgUcRoOV4nJS8ewNiW4wO1Qd-9UvZ_KhOjf9RkSguSCcF8MhY0iTDlZA3N9ZXtw3FWuBEJ4A4Vp8Lt/file#');
-  const game_music = new Audio('https://ucf044d69e34c84fed40b218b97e.dl.dropboxusercontent.com/cd/0/inline/ClKGw7T88_I06T0tjHVyfXKNhXVb0nqKaLC1wDym4ioxW6ruv2pxac_uDQb_Lhc7ohQEfBbLOFVU1C_-KAQBswBS7HNLMGuxgp0nMrQbZiP0JwSggpnxRtjFF8-6DeUwaZziJkT_XvMAzQV8ZQadF78T/file#');
-  const wow_sound = new Audio('https://www.dropbox.com/scl/fi/1fzcikv4qiubc5zygw3g6/wow.mp3?rlkey=x763nc4pqwwne5jhryirmzp10&st=5mp1i7o9&raw=1');
+  const som1 = new Audio("https://cdn.rafaeldantas.dev.br/sounds/finish.mp3");
+  const mining_sound = useRef(new Audio("https://cdn.rafaeldantas.dev.br/sounds/pickaxe.mp3"));
+  const coin_sound = new Audio('https://cdn.rafaeldantas.dev.br/sounds/coin_sound.mp3');
+  const game_music = new Audio('https://cdn.rafaeldantas.dev.br/sounds/loading_music.mp3');
+  const wow_sound = new Audio('https://cdn.rafaeldantas.dev.br/sounds/wow.mp3');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isChunkLoading, setIsChunkLoading] = useState(false);
@@ -335,7 +335,7 @@ function App() {
               <ul className={`grid grid-cols-8 lg:w-auto w-[90vw] gap-1 p-2 bg-zinc-300 border-4 border-zinc-500 ${isChunkLoading ? 'hidden' : null}`}>
                 {blocks.map(block => {
                   return <li key={block.id + '-bloco'} className={`lg:h-[45px] lg:w-[45px] w-auto bg-green-700 hover:scale-110 duration-300 border-4 border-zinc-700 hover:border-green-600 overflow-hidden ${!block.enabled ? 'bg-zinc-300 border-none' : null} ${isLoading && block.selected ? 'animate-pulse' : null}`} onClick={() => handleSelectBlock(block)}>
-                    <img className={`w-[45px] ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`${block.image_url}`}></img>
+                    <img className={`lg:w-[45px] w-full ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`${block.image_url}`}></img>
                   </li>
                 })}
               </ul>
@@ -392,7 +392,7 @@ function App() {
                   <p className="font-semibold">{converterSegundosEmTexto(selectedBlock.seconds)}</p>
                 </div>
                 <div className="flex items-center gap-1 my-1">
-                  <img src="https://br562.hostgator.com.br:2083/cpsess1750943472/viewer/home1%2frafa1811%2fpublic_html%2fupload/coin.png" className="w-[15px]" />
+                  <img src="https://cdn.rafaeldantas.dev.br/coin.png" className="w-[15px]" />
                   <p className="font-semibold">{selectedBlock.coins * multiplier}</p>
                 </div>
               </div>
@@ -408,7 +408,7 @@ function App() {
         }
         {/* Barra de ganhos */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-zinc-300 border-8 border-zinc-700 flex justify-center items-center hidden">
-          <img className="p-8 bg-zinc-800 h-[200px] w-auto" src="./src/assets/gold-ingot.png" />
+          <img className="p-8 bg-zinc-800 h-[200px] w-auto" src="https://cdn.rafaeldantas.dev.br/gold_ingot.png" />
         </div>
 
         {/* Recompensa */}
