@@ -10,28 +10,35 @@ import { IoTime } from "react-icons/io5"
 import { PiCloverFill, PiSpeedometerFill } from "react-icons/pi"
 import { RiNewsFill } from "react-icons/ri"
 import isMobile from "is-mobile"
+import { IoMdEye } from "react-icons/io"
 
 const stones =
   [
-    { name: "Pedra comum", image_url: "stone.jpeg", raridade: "Comum", coins: 1, seconds: 5, selected: false, enabled: true, probability: 100, rewards: 0 },
-    { name: "Pedra escura", image_url: "blackstone.png", raridade: "Comum", coins: 2, seconds: 15, selected: false, enabled: true, probability: 50, rewards: 0 },
-    { name: "Andersite", image_url: "andersite.png", raridade: "Comum", coins: 2, seconds: 5, selected: false, enabled: true, probability: 30, rewards: 0 },
-    { name: "Pedra profunda", image_url: "deepslate.jpeg", raridade: "Comum", coins: 2, seconds: 30, selected: false, enabled: true, probability: 70, rewards: 0 },
-    { name: "Granito", image_url: "granite.jpeg", raridade: "Comum", coins: 1, seconds: 15, selected: false, enabled: true, probability: 30, rewards: 0 },
-    { name: "Ouro", image_url: "gold.png", raridade: "Raro", coins: 5, seconds: 120, selected: false, enabled: true, probability: 100, rewards: 0 }
+    { name: "Pedra comum", image_url: "http://cdn.rafaeldantas.dev.br/stone.jpeg", raridade: "Comum", coins: 1, seconds: 5, selected: false, enabled: true, probability: 100, rewards: 0 },
+    { name: "Pedra escura", image_url: "http://cdn.rafaeldantas.dev.br/blackstone.png", raridade: "Comum", coins: 2, seconds: 15, selected: false, enabled: true, probability: 50, rewards: 0 },
+    { name: "Andersite", image_url: "http://cdn.rafaeldantas.dev.br/andersite.png", raridade: "Comum", coins: 2, seconds: 5, selected: false, enabled: true, probability: 30, rewards: 0 },
+    { name: "Pedra profunda", image_url: "http://cdn.rafaeldantas.dev.br/deepslate.jpeg", raridade: "Comum", coins: 2, seconds: 30, selected: false, enabled: true, probability: 70, rewards: 0 },
+    { name: "Granito", image_url: "http://cdn.rafaeldantas.dev.br/granite.jpeg", raridade: "Comum", coins: 1, seconds: 15, selected: false, enabled: true, probability: 30, rewards: 0 },
+    { name: "Ouro", image_url: "http://cdn.rafaeldantas.dev.br/gold.png", raridade: "Raro", coins: 5, seconds: 120, selected: false, enabled: true, probability: 100, rewards: 0 }
   ];
 
 const sprites = Array.from({ length: 21 }, (_, i) => `sprite_${i + 1}.png`);
 
+const images = Array.from({ length: 21 }, (_, i) => 
+  `http://cdn.rafaeldantas.dev.br/sprites/sprite_${i + 1}.png`
+);
+
 function App() {
   const gold_value = 5;
 
+  const [isLoadingResources, setIsLoadingResources] = useState(true);
+
   //Sounds
   const som1 = new Audio("./src/assets/finish.mp3");
-  const mining_sound = useRef(new Audio("https://uc69f0afffe619eac504dc567ce7.dl.dropboxusercontent.com/cd/0/inline/ClJTcogjDhoVxWCr0qCVzHF3buD9qi4iqLW5XK3vvBu-vEhTFGONNCeQJU2NxOm-ZXPJ7SQKKRT4oNx53Cs1cedif1KqRNFZ0EgN7hYXsKDq_yZyjkFiMyP7LWWkjlFNt3o3D1HMsKmYGAJWUFGzkTBO/file#"));
+  const mining_sound = useRef(new Audio("https://www.dropbox.com/scl/fi/48t6edlhkk13e1f4eovtr/pickaxe.mp3?rlkey=regwjsg5o07tjgrfabk6ak78x&st=yq2fnfnc&raw=1"));
   const coin_sound = new Audio('https://uc3d3fe31d0d1888c60670d6e502.dl.dropboxusercontent.com/cd/0/inline/ClJ0O6w-PyQNXTCRhNR5tqtbkXKJa6M6l4srLPK-ndKp31UF_Z8gfENdh_GN87wyJHin2VyDUJUgUcRoOV4nJS8ewNiW4wO1Qd-9UvZ_KhOjf9RkSguSCcF8MhY0iTDlZA3N9ZXtw3FWuBEJ4A4Vp8Lt/file#');
   const game_music = new Audio('https://ucf044d69e34c84fed40b218b97e.dl.dropboxusercontent.com/cd/0/inline/ClKGw7T88_I06T0tjHVyfXKNhXVb0nqKaLC1wDym4ioxW6ruv2pxac_uDQb_Lhc7ohQEfBbLOFVU1C_-KAQBswBS7HNLMGuxgp0nMrQbZiP0JwSggpnxRtjFF8-6DeUwaZziJkT_XvMAzQV8ZQadF78T/file#');
-  const wow_sound = new Audio('https://uc4dec83485e4fb01054134dd595.dl.dropboxusercontent.com/cd/0/inline/ClKv-eI9XnE2HAevEngzl9BHxbQs5BDXPU0Isbdqt9F8fDrH_Ylx2sKZOetwnSn6w_jmNXsS1xv-qzf3M4shgcQQjVHGegkFvexGQXu_aTw7HGPrumEJGHLvjMsDAixMcExNo-Kti2obwzF3DXOAIBsD/file#');
+  const wow_sound = new Audio('https://www.dropbox.com/scl/fi/1fzcikv4qiubc5zygw3g6/wow.mp3?rlkey=x763nc4pqwwne5jhryirmzp10&st=5mp1i7o9&raw=1');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isChunkLoading, setIsChunkLoading] = useState(false);
@@ -97,7 +104,7 @@ function App() {
         mining_sound.current.pause();
         som1.play();
         cancelAnimationFrame(character_animation_id.current);
-        sprite_image.current.src = './src/assets/sprites/sprite_1.png';
+        sprite_image.current.src = 'http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png';
 
         // Se houver recompensas
         if (selectedBlock.rewards) {
@@ -221,7 +228,7 @@ function App() {
 
   function animate(timestamp) {
     if (timestamp - lastFrameTime.current >= frameDelay) {
-      sprite_image.current.src = `/src/assets/sprites/${sprites[sprite_frame.current]}`;
+      sprite_image.current.src = `http://cdn.rafaeldantas.dev.br/sprites/${sprites[sprite_frame.current]}`;
       sprite_frame.current = (sprite_frame.current + 1) % sprites.length;
       lastFrameTime.current = timestamp; // Atualiza o tempo do último frame
     }
@@ -235,11 +242,21 @@ function App() {
       setModelBlocks(Array.from({ length: 64 }, (_, i) => ({ color_index: Math.floor(Math.random() * 3) })));
     }, 300);
 
-    // const interval_sprite = setInterval(() => {
-    //   sprite_frame.current = sprite_frame.current >= 21 ? 1 : sprite_frame.current + 1;
-    //   sprite_image.current.src = `./src/assets/sprites/sprite_${sprite_frame.current}.png`;
-    //   console.log(sprite_frame.current);
-    // }, 300);
+    const loadImages = async () => {
+      const promises = images.map((src) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      });
+
+      await Promise.all(promises);
+      setIsLoadingResources(false); // Só libera o app depois de carregar todas as imagens
+    };
+
+    loadImages();
   }, []);
 
   useEffect(() => {
@@ -256,6 +273,10 @@ function App() {
     }
   }, [selectedBlock, isReward])
 
+  if (isLoadingResources) {
+    return <div>Carregando...</div>
+  }
+
   return (
     <>
       <div className='text-white w-full min-h-[100vh] bg-zinc-700 flex flex-col  items-center lg:gap-4'>
@@ -270,13 +291,13 @@ function App() {
             </div>
             {/* moedas */}
             <div className="flex items-center gap-2">
-              <img className="w-[30px]" src="./src/assets/coin.png" />
+              <img className="w-[30px]" src="http://cdn.rafaeldantas.dev.br/coin.png" />
               <p className="font-extrabold text-white text-sm">{coins}</p>
             </div>
           </div>
           <div className="flex lg:flex-row flex-col justify-center lg:gap-16 gap-8 mt-4">
             <div className="flex flex-col items-center gap-4">
-              <img ref={sprite_image} src='/src/assets/sprites/sprite_1.png' className={`-scale-x-100 w-[280px] ${!isLoading ? 'hidden' : null} lg:block my-2`} />
+              <img ref={sprite_image} src='http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png' className={`-scale-x-100 w-[280px] ${!isLoading ? 'hidden' : null} lg:block my-2`} />
               {/* Skills */}
               <div className={`flex flex-col gap-2 ${isLoading ? 'hidden lg:flex' : null}`}>
                 <div>
@@ -314,7 +335,7 @@ function App() {
               <ul className={`grid grid-cols-8 lg:w-auto w-[90vw] gap-1 p-2 bg-zinc-300 border-4 border-zinc-500 ${isChunkLoading ? 'hidden' : null}`}>
                 {blocks.map(block => {
                   return <li key={block.id + '-bloco'} className={`lg:h-[45px] lg:w-[45px] w-auto bg-green-700 hover:scale-110 duration-300 border-4 border-zinc-700 hover:border-green-600 overflow-hidden ${!block.enabled ? 'bg-zinc-300 border-none' : null} ${isLoading && block.selected ? 'animate-pulse' : null}`} onClick={() => handleSelectBlock(block)}>
-                    <img className={`w-[45px] ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`./src/assets/${block.image_url}`}></img>
+                    <img className={`w-[45px] ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`${block.image_url}`}></img>
                   </li>
                 })}
               </ul>
@@ -362,7 +383,7 @@ function App() {
         {
           selectedBlock && !isLoading ?
             <div className="relative lg:w-[750px] w-[90vw] lg:p-6 p-4 bg-zinc-300 drop-shadow-md border-zinc-700 flex flex-col lg:flex-row gap-4 mt-2 text-zinc-900 lg:my-0 my-8">
-              <img src={`./src/assets/${selectedBlock.image_url}`} className="border-8 border-zinc-700 w-[120px] h-[120px]" />
+              <img src={selectedBlock.image_url} className="border-8 border-zinc-700 w-[120px] h-[120px]" />
               <div className="flex-1">
                 <p className="font-bold text-2xl text-zinc-800">{selectedBlock.id} - {selectedBlock.name}</p>
                 <p className="text-sm">Raridade: {selectedBlock.raridade}</p>
@@ -371,7 +392,7 @@ function App() {
                   <p className="font-semibold">{converterSegundosEmTexto(selectedBlock.seconds)}</p>
                 </div>
                 <div className="flex items-center gap-1 my-1">
-                  <img src="./src/assets/coin.png" className="w-[15px]" />
+                  <img src="https://br562.hostgator.com.br:2083/cpsess1750943472/viewer/home1%2frafa1811%2fpublic_html%2fupload/coin.png" className="w-[15px]" />
                   <p className="font-semibold">{selectedBlock.coins * multiplier}</p>
                 </div>
               </div>
@@ -404,7 +425,7 @@ function App() {
                   <div>
                     <p className="text-sm lg:text-center font-semibold">Ouro</p>
                     <div className="flex lg:items-center lg:justify-center gap-1 mt-1">
-                      <img className="w-[20px]" src="./src/assets/coin.png" />
+                      <img className="w-[20px]" src="https://br562.hostgator.com.br:2083/cpsess1750943472/viewer/home1%2frafa1811%2fpublic_html%2fupload/coin.png" />
                       <p className="text-sm text-end font-bold">{(reward * gold_value) * multiplier}</p>
                     </div>
                   </div>
