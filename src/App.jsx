@@ -239,7 +239,7 @@ function App() {
   useEffect(() => {
     handleGenerateChunk();
     setInterval(() => {
-      setModelBlocks(Array.from({ length: 64 }, (_, i) => ({ color_index: Math.floor(Math.random() * 3) })));
+      setModelBlocks(Array.from({ length: 64 }, (_, i) => ({ color_index: Math.floor(Math.random() * 3), id: i })));
     }, 300);
 
     const loadImages = async () => {
@@ -321,9 +321,9 @@ function App() {
                 <div>
                   <p className="font-bold py-1 text-sm">Picareta:</p>
                   <ul className="flex gap-1">
-                    <li className="bg-zinc-400 border-4 border-zinc-500 hover:bg-green-900 duration-300 group"><img src="./src/assets/pickaxe_2.png" className="w-[30px] p-1" /></li>
-                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><img src="./src/assets/netherite-pickaxe.png" className="w-[30px] p-1" /></li>
-                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><img src="./src/assets/pickaxe_1.png" className="w-[30px] p-1" /></li>
+                    <li className="bg-zinc-400 border-4 border-zinc-500 hover:bg-green-900 duration-300 group"><img src="https://cdn.rafaeldantas.dev.br/pickaxe_2.png" className="w-[30px] p-1" /></li>
+                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><img src="https://cdn.rafaeldantas.dev.br/netherite-pickaxe.png" className="w-[30px] p-1" /></li>
+                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><img src="https://cdn.rafaeldantas.dev.br/pickaxe_1.png" className="w-[30px] p-1" /></li>
                     <li className="bg-green-600 border-4 border-green-800 hover:bg-green-900 duration-300 group flex justify-center items-center w-[35px]"><FaExchangeAlt color="white" /></li>
                   </ul>
                 </div>
@@ -339,9 +339,9 @@ function App() {
                   </li>
                 })}
               </ul>
-              <ul className={`grid grid-cols-8 gap-1 p-2 bg-zinc-300 border-4 border-zinc-500 ${!isChunkLoading ? 'hidden' : null}`}>
+              <ul className={`grid grid-cols-8 lg:w-auto w-[90vw] gap-1 p-2 bg-zinc-300 border-4 border-zinc-500 ${!isChunkLoading ? 'hidden' : null}`}>
                 {modelBlock.map(block => {
-                  return <li key={block.id + '-bloco'} className={`h-[45px] w-[45px] border-4 border-zinc-700 overflow-hidden ${block.color_index === 1 ? 'bg-green-700' : block.color_index === 2 ? 'bg-green-600' : 'bg-green-500'}`} onClick={() => handleSelectBlock(block)}>
+                  return <li key={block.id + '-model'} className={`lg:h-[45px] lg:w-[45px] w-full aspect-square border-4 border-zinc-700 overflow-hidden ${block.color_index === 1 ? 'bg-green-700' : block.color_index === 2 ? 'bg-green-600' : 'bg-green-500'}`}>
                   </li>
                 })}
               </ul>
@@ -420,12 +420,12 @@ function App() {
                 <li className="lg:block flex gap-2">
                   <div className="h-[100px] w-[100px] flex justify-center items-center bg-gradient-to-b from-zinc-100 to-amber-300 border-2 border-zinc-700 relative hover:scale-105 duration-300">
                     <div className="p-2 bg-zinc-700 flex justify-center items-center w-[20px] h-[20px] text-sm font-bold text-white absolute top-0 left-0">{reward}</div>
-                    <img className="w-[50px]" src="./src/assets/gold-ingot.png" />
+                    <img className="w-[50px]" src="https://cdn.rafaeldantas.dev.br/gold-ingot.png" />
                   </div>
                   <div>
                     <p className="text-sm lg:text-center font-semibold">Ouro</p>
                     <div className="flex lg:items-center lg:justify-center gap-1 mt-1">
-                      <img className="w-[20px]" src="https://br562.hostgator.com.br:2083/cpsess1750943472/viewer/home1%2frafa1811%2fpublic_html%2fupload/coin.png" />
+                      <img className="w-[20px]" src="https://cdn.rafaeldantas.dev.br/coin.png" />
                       <p className="text-sm text-end font-bold">{(reward * gold_value) * multiplier}</p>
                     </div>
                   </div>
