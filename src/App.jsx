@@ -1,4 +1,4 @@
-import { CoinsIcon, LoaderIcon, Shuffle, StoreIcon, Trophy } from "lucide-react"
+import { CoinsIcon, LoaderIcon, StoreIcon, Trophy } from "lucide-react"
 import { useRef } from "react"
 import { useEffect } from "react"
 import { useState } from "react"
