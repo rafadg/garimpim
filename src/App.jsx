@@ -24,7 +24,7 @@ const stones =
 
 const sprites = Array.from({ length: 21 }, (_, i) => `sprite_${i + 1}.png`);
 
-const images = Array.from({ length: 21 }, (_, i) => 
+const images = Array.from({ length: 21 }, (_, i) =>
   `http://cdn.rafaeldantas.dev.br/sprites/sprite_${i + 1}.png`
 );
 
@@ -39,8 +39,10 @@ function App() {
   const coin_sound = new Audio('https://cdn.rafaeldantas.dev.br/sounds/coin_sound.mp3');
   const game_music = new Audio('https://cdn.rafaeldantas.dev.br/sounds/loading_music.mp3');
   const wow_sound = new Audio('https://cdn.rafaeldantas.dev.br/sounds/wow.mp3');
+  const achievement_sound = new Audio('https://cdn.rafaeldantas.dev.br/sounds/achievement.mp3');
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const [isChunkLoading, setIsChunkLoading] = useState(false);
   const [isReward, setIsReward] = useState(false);
   const [reward, setReward] = useState(0);
@@ -106,6 +108,9 @@ function App() {
         cancelAnimationFrame(character_animation_id.current);
         sprite_image.current.src = 'http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png';
 
+        //Achievement
+        activeNotification();
+
         // Se houver recompensas
         if (selectedBlock.rewards) {
           setReward(selectedBlock.rewards);
@@ -125,6 +130,14 @@ function App() {
         );
       }
     }
+  }
+
+  function activeNotification() {
+    setTimeout(() => {
+      achievement_sound.play();
+      setIsNotificationVisible(true);
+      setTimeout(() => setIsNotificationVisible(false), 3000)
+    }, 1000);
   }
 
   function changeProgressBar() {
@@ -223,7 +236,7 @@ function App() {
       game_music.pause();
       game_music.currentTime = 0;
       wow_sound.play();
-    }, 5000);
+    }, 10000);
   }
 
   function animate(timestamp) {
@@ -279,7 +292,7 @@ function App() {
 
   return (
     <>
-      <div className='text-white w-full min-h-[100vh] bg-zinc-700 flex flex-col  items-center lg:gap-4'>
+      <div className='text-white min-h-[100vh] bg-zinc-700 flex flex-col items-center lg:gap-4 relative w-screen overflow-hidden'>
         <div className="lg:px-4 lg:pb-0 pb-8">
           <div className="flex justify-between w-full bg-zinc-800 py-2 px-8">
             <div className="flex gap-2">
@@ -451,14 +464,23 @@ function App() {
             </div>
             : null
         }
+        <div className="absolute hidden lg:flex top-8 left-8 w-[250px] h-[92vh] bg-zinc-800 items-center justify-center">
+          <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
+        </div>
+        <div className="absolute hidden lg:flex top-8 right-8 w-[250px] h-[92vh] bg-zinc-800 items-center justify-center">
+          <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
+        </div>
+        <div
+          className={`lg:absolute fixed lg:top-4 lg:right-4 lg:w-[600px] lg:h-full w-full h-screen top-0 left-0 p-8 border-8 border-zinc-950 bg-zinc-900 flex lg:flex-row lg:justify-normal items-center flex-col justify-center  gap-4 duration-1000 transition-transform ${isNotificationVisible ? 'translate-x-0' : 'translate-x-[620px]'
+            }`}
+        >
+          <img className="w-[80px]" src="https://cdn.rafaeldantas.dev.br/stone.jpeg"></img>
+          <div className="h-[80px]">
+            <p className="font-bold text-[20px] text-green-400">Conquista Desbloqueada!</p>
+            <p className="font-bold text-[24px] text-white">Minerou o seu primeiro bloco!</p>
+          </div>
+        </div>
       </div>
-      <div className="absolute hidden lg:flex top-8 left-8 w-[250px] h-[92vh] bg-zinc-800 items-center justify-center">
-        <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
-      </div>
-      <div className="absolute hidden lg:flex top-8 right-8 w-[250px] h-[92vh] bg-zinc-800 items-center justify-center">
-        <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
-      </div>
-      <a href="https://www.dropbox.com/scl/fi/1y4tv9xkvrgywkexo37fp/coin.mp3?rlkey=qrwz365cp270hp0c40078twpl&st=ssik2c38&raw=1"></a>
     </>
   )
 }
