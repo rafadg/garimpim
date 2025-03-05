@@ -136,7 +136,7 @@ function App() {
     setTimeout(() => {
       achievement_sound.play();
       setIsNotificationVisible(true);
-      setTimeout(() => setIsNotificationVisible(false), 3000)
+      setTimeout(() => setIsNotificationVisible(false), 5000)
     }, 1000);
   }
 
@@ -471,13 +471,13 @@ function App() {
           <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
         </div>
         <div
-          className={`lg:absolute fixed lg:top-4 lg:right-4 lg:w-[600px] lg:h-full w-full h-screen top-0 left-0 p-8 border-8 border-zinc-950 bg-zinc-900 flex lg:flex-row lg:justify-normal items-center flex-col justify-center  gap-4 duration-1000 transition-transform ${isNotificationVisible ? 'translate-x-0' : 'translate-x-[620px]'
+          className={`lg:absolute fixed lg:top-4 lg:right-4 lg:w-[600px] lg:h-full w-full h-screen top-0 left-0 p-8 border-8 border-zinc-950 bg-zinc-900 flex lg:flex-row lg:justify-normal items-center flex-col justify-center gap-4 duration-1000 transition-transform ${isNotificationVisible ? 'translate-x-0' : 'translate-x-[620px]'
             }`}
         >
           <img className="w-[80px]" src="https://cdn.rafaeldantas.dev.br/stone.jpeg"></img>
           <div className="h-[80px]">
-            <p className="font-bold text-[20px] text-green-400">Conquista Desbloqueada!</p>
-            <p className="font-bold text-[24px] text-white">Minerou o seu primeiro bloco!</p>
+            <p className="font-bold text-[16px] text-green-400">Conquista Desbloqueada!</p>
+            <p className="font-bold text-[18px] text-white">Minerou o seu primeiro bloco!</p>
           </div>
         </div>
       </div>
