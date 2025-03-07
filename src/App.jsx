@@ -72,7 +72,7 @@ function App() {
     if (coins >= selectedBlock.custo * multiplier) {
 
       //API
-      const response = await fetch('https://https://api-garimpim.vercel.app//minerar/' + selectedBlock.posicao);
+      const response = await fetch('https://api-garimpim.vercel.app/minerar/' + selectedBlock.posicao);
       const json = await response.json();
 
       const seconds = selectedBlock.segundos;
