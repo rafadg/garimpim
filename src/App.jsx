@@ -12,15 +12,6 @@ import { RiNewsFill } from "react-icons/ri"
 import isMobile from "is-mobile"
 import { IoMdEye } from "react-icons/io"
 
-const stones =
-  [
-    { name: "Pedra comum", image_url: "http://cdn.rafaeldantas.dev.br/stone.jpeg", raridade: "Comum", coins: 1, seconds: 5, selected: false, enabled: true, probability: 100, rewards: 0 },
-    { name: "Pedra escura", image_url: "http://cdn.rafaeldantas.dev.br/blackstone.png", raridade: "Comum", coins: 2, seconds: 15, selected: false, enabled: true, probability: 50, rewards: 0 },
-    { name: "Andersite", image_url: "http://cdn.rafaeldantas.dev.br/andersite.png", raridade: "Comum", coins: 2, seconds: 5, selected: false, enabled: true, probability: 30, rewards: 0 },
-    { name: "Pedra profunda", image_url: "http://cdn.rafaeldantas.dev.br/deepslate.jpeg", raridade: "Comum", coins: 2, seconds: 30, selected: false, enabled: true, probability: 70, rewards: 0 },
-    { name: "Granito", image_url: "http://cdn.rafaeldantas.dev.br/granite.jpeg", raridade: "Comum", coins: 1, seconds: 15, selected: false, enabled: true, probability: 30, rewards: 0 },
-    { name: "Ouro", image_url: "http://cdn.rafaeldantas.dev.br/gold.png", raridade: "Raro", coins: 5, seconds: 120, selected: false, enabled: true, probability: 100, rewards: 0 }
-  ];
 
 const sprites = Array.from({ length: 21 }, (_, i) => `sprite_${i + 1}.png`);
 
@@ -45,7 +36,7 @@ function App() {
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const [isChunkLoading, setIsChunkLoading] = useState(false);
   const [isReward, setIsReward] = useState(false);
-  const [reward, setReward] = useState(0);
+  const [reward, setReward] = useState(1);
   const [selectedBlock, setSelectedBlock] = useState(null);
 
   const [datas, setDatas] = useState();
@@ -72,24 +63,25 @@ function App() {
     const index = Math.floor(Math.random() * 6);
     const block = stones[index];
     block.rewards = generateReward(block.probability);
-    setTotalPrice(prev => prev + block.coins);
+    setTotalPrice(prev => prev + block.custo);
     setTotalRewards(prev => prev + (block.rewards * gold_value));
     return stones[index];
   }
 
-  function handleMining() {
-    if (coins >= selectedBlock.coins * multiplier) {
-      setTotalPrice(prev => prev - selectedBlock.coins);
-      setCoins(prev => prev - (selectedBlock.coins * multiplier));
-      mining_sound.current.loop = true; // Som repetindo
-      mining_sound.current.play();
-      const seconds = selectedBlock.seconds;
-      setIsLoading(true);
+  async function handleMining() {
+    if (coins >= selectedBlock.custo * multiplier) {
+
+      //API
+      const response = await fetch('https://https://api-garimpim.vercel.app//minerar/' + selectedBlock.posicao);
+      const json = await response.json();
+
+      const seconds = selectedBlock.segundos;
       const startDate = new Date();
       const targetDate = new Date(startDate.getTime() + (seconds * 1000));
-      requestAnimationFrame(animate);
-
       setDatas({ startDate: startDate, targetDate: targetDate });
+
+      ativarMineracao();
+
     } else {
       alert('Dinheiro insuficiente');
     }
@@ -102,34 +94,40 @@ function App() {
       changeProgressBar();
 
       if (new Date() >= datas.targetDate) {
-        mining_sound.current.loop = false; // Stop looping
-        mining_sound.current.pause();
-        som1.play();
-        cancelAnimationFrame(character_animation_id.current);
-        sprite_image.current.src = 'http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png';
-
-        //Achievement
-        activeNotification();
-
-        // Se houver recompensas
-        if (selectedBlock.rewards) {
-          setReward(selectedBlock.rewards);
-          setIsReward(true);
-          setTotalRewards(prev => prev - (selectedBlock.rewards * gold_value));
-        }
-
-        setIsLoading(false);
-        setDatas({ startDate: new Date(), targetDate: new Date() });
-        setSelectedBlock(null);
-        setBlocks(prev =>
-          prev.map(b =>
-            b.id === selectedBlock.id
-              ? { ...b, enabled: false }
-              : { ...b }
-          )
-        );
+        finalizarMineracao();
       }
     }
+  }
+
+  function ativarMineracao() {
+    //setTotalPrice(prev => prev - selectedBlock.custo);
+    //setCoins(prev => prev - (selectedBlock.custo * multiplier));
+    mining_sound.current.loop = true; // Som repetindo
+    mining_sound.current.play();
+    setIsLoading(true);
+    requestAnimationFrame(animate);
+  }
+
+  function finalizarMineracao() {
+    mining_sound.current.loop = false; // Stop looping
+    mining_sound.current.pause();
+    som1.play();
+    cancelAnimationFrame(character_animation_id.current);
+    sprite_image.current.src = 'http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png';
+
+    setIsLoading(false);
+    setDatas({ startDate: new Date(), targetDate: new Date() });
+    setSelectedBlock(null);
+    setBlocks(prev =>
+      prev.map(b =>
+        b.posicao === selectedBlock.posicao
+          ? { ...b, enabled: false }
+          : { ...b }
+      )
+    );
+
+    // Se houver recompensas
+    checarStatus();
   }
 
   function activeNotification() {
@@ -161,7 +159,7 @@ function App() {
       setSelectedBlock(block);
       setBlocks(prev =>
         prev.map(b =>
-          b.id === block.id
+          b.posicao === block.posicao
             ? { ...b, selected: true }
             : { ...b, selected: false }
         )
@@ -169,7 +167,9 @@ function App() {
     }
   }
 
-  function handleClaim() {
+  async function handleClaim() {
+    const response = await fetch('https://api-garimpim.vercel.app/reivindicar');
+    const data = await response.json();
     coin_sound.play();
     setIsReward(false);
     setCoins(prev => prev + ((gold_value * reward) * multiplier));
@@ -223,20 +223,28 @@ function App() {
     return ocorrencias;
   }
 
-  function handleGenerateChunk() {
-    setBlocks(Array.from({ length: 64 }, (_, i) => ({ id: i + 1, ...randomBlock() })));
+  async function carregarChunk() {
+    const response = await fetch('http://api-garimpim.vercel.app/get_chunk');
+    const chunk = await response.json();
+    setBlocks(chunk.map(bloco => { return { ...bloco, selected: false } }));
   }
 
-  function handleClickRandomChunk() {
+  async function gerarChunk() {
+    const response = await fetch('http://api-garimpim.vercel.app/gerar_chunk');
+    const chunk = await response.json();
+    setBlocks(chunk.map(bloco => { return { ...bloco, selected: false } }));
+  }
+
+  async function handleClickRandomChunk() {
     setIsChunkLoading(true);
     game_music.play();
-    handleGenerateChunk();
+    await gerarChunk();
     setTimeout(() => {
       setIsChunkLoading(false);
       game_music.pause();
       game_music.currentTime = 0;
       wow_sound.play();
-    }, 10000);
+    }, 3000);
   }
 
   function animate(timestamp) {
@@ -248,9 +256,25 @@ function App() {
     character_animation_id.current = requestAnimationFrame(animate);
   }
 
+  async function checarStatus() {
+    const response = await fetch('http://api-garimpim.vercel.app/checar_status');
+    const data = await response.json();
+
+    switch (data.status) {
+      case 'minerando':
+        setDatas({ startDate: new Date(data.data_inicio), targetDate: new Date(data.data_objetivo) });
+        setSelectedBlock(data.bloco);
+        ativarMineracao();
+        break;
+      case 'recompensa':
+        setIsReward(true);
+        break;
+    }
+  }
+
 
   useEffect(() => {
-    handleGenerateChunk();
+    carregarChunk();
     setInterval(() => {
       setModelBlocks(Array.from({ length: 64 }, (_, i) => ({ color_index: Math.floor(Math.random() * 3), id: i })));
     }, 300);
@@ -266,7 +290,7 @@ function App() {
       });
 
       await Promise.all(promises);
-      setIsLoadingResources(false); // Só libera o app depois de carregar todas as imagens
+      //setIsLoadingResources(false); // Só libera o app depois de carregar todas as imagens
     };
 
     loadImages();
@@ -287,7 +311,14 @@ function App() {
   }, [selectedBlock, isReward])
 
   if (isLoadingResources) {
-    return <div>Carregando...</div>
+    return (
+      <div className="w-full h-screen flex justify-center items-center bg-slate-700">
+        <div onClick={() => {
+          setIsLoadingResources(false);
+          checarStatus();
+        }} className="py-8 px-16 bg-slate-900 hover:bg-slate-950 text-lg text-white font-bold">Iniciar</div>
+      </div>
+    );
   }
 
   return (
@@ -347,8 +378,8 @@ function App() {
             <div className={`${isLoading ? 'hidden lg:block' : null} lg:block flex flex-col items-center`}>
               <ul className={`grid grid-cols-8 lg:w-auto w-[90vw] gap-1 p-2 bg-zinc-300 border-4 border-zinc-500 ${isChunkLoading ? 'hidden' : null}`}>
                 {blocks.map(block => {
-                  return <li key={block.id + '-bloco'} className={`lg:h-[45px] lg:w-[45px] w-auto bg-green-700 hover:scale-110 duration-300 border-4 border-zinc-700 hover:border-green-600 overflow-hidden ${!block.enabled ? 'bg-zinc-300 border-none' : null} ${isLoading && block.selected ? 'animate-pulse' : null}`} onClick={() => handleSelectBlock(block)}>
-                    <img className={`lg:w-[45px] w-full ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`${block.image_url}`}></img>
+                  return <li key={block.posicao + '-bloco'} className={`lg:h-[45px] lg:w-[45px] w-auto bg-green-700 hover:scale-110 duration-300 border-4 border-zinc-700 hover:border-green-600 overflow-hidden ${!block.enabled ? 'bg-zinc-300 border-none' : null} ${isLoading && block.selected ? 'animate-pulse' : null}`} onClick={() => handleSelectBlock(block)}>
+                    <img className={`lg:w-[45px] w-full ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`${block.url_imagem}`}></img>
                   </li>
                 })}
               </ul>
@@ -372,7 +403,7 @@ function App() {
         {
           isLoading ?
             <div className="mt-2">
-              <p className="font-bold text-zinc-300">Minerando bloco de {selectedBlock.name}</p>
+              <p className="font-bold text-zinc-300">Minerando bloco de {selectedBlock.nome}</p>
               <div className="flex gap-2 items-center">
                 <ul className="flex flex-col gap-2 mt-1">
                   <li id="loading_bar" className="lg:w-[600px] w-[90vw] box-content bg-zinc-100 border-4 border-green-800 animate-pulse">
@@ -396,17 +427,17 @@ function App() {
         {
           selectedBlock && !isLoading ?
             <div className="relative lg:w-[750px] w-[90vw] lg:p-6 p-4 bg-zinc-300 drop-shadow-md border-zinc-700 flex flex-col lg:flex-row gap-4 mt-2 text-zinc-900 lg:my-0 my-8">
-              <img src={selectedBlock.image_url} className="border-8 border-zinc-700 w-[120px] h-[120px]" />
+              <img src={selectedBlock.url_imagem} className="border-8 border-zinc-700 w-[120px] h-[120px]" />
               <div className="flex-1">
-                <p className="font-bold text-2xl text-zinc-800">{selectedBlock.id} - {selectedBlock.name}</p>
+                <p className="font-bold text-2xl text-zinc-800">{selectedBlock.posicao} - {selectedBlock.nome}</p>
                 <p className="text-sm">Raridade: {selectedBlock.raridade}</p>
                 <div className="flex items-center gap-1 my-1">
                   <IoTime />
-                  <p className="font-semibold">{converterSegundosEmTexto(selectedBlock.seconds)}</p>
+                  <p className="font-semibold">{converterSegundosEmTexto(selectedBlock.segundos)}</p>
                 </div>
                 <div className="flex items-center gap-1 my-1">
                   <img src="https://cdn.rafaeldantas.dev.br/coin.png" className="w-[15px]" />
-                  <p className="font-semibold">{selectedBlock.coins * multiplier}</p>
+                  <p className="font-semibold">{selectedBlock.custo * multiplier}</p>
                 </div>
               </div>
               <div className="absolute top-2 right-2 flex gap-2 items-center p-1 bg-zinc-600 border-2 border-zinc-800 hover:bg-zinc-700 hover:border-zinc-900 duration-300">
@@ -471,7 +502,7 @@ function App() {
           <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
         </div>
         <div
-          className={`lg:absolute fixed lg:top-4 lg:right-4 lg:w-[600px] lg:h-full w-full h-screen top-0 left-0 p-8 border-8 border-zinc-950 bg-zinc-900 flex lg:flex-row lg:justify-normal items-center flex-col justify-center gap-4 duration-1000 transition-transform ${isNotificationVisible ? 'translate-x-0' : 'translate-x-[620px]'
+          className={`fixed w-full h-screen lg:absolute lg:top-4 lg:right-4 lg:w-[600px] lg:h-auto p-8 border-8 border-zinc-950 bg-zinc-900 flex lg:flex-row lg:justify-normal items-center flex-col justify-center gap-4 duration-1000 transition-transform ${isNotificationVisible ? 'translate-x-0' : 'translate-x-[620px]'
             }`}
         >
           <img className="w-[80px]" src="https://cdn.rafaeldantas.dev.br/stone.jpeg"></img>
