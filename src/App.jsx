@@ -474,19 +474,6 @@ function App() {
                     </div>
                   </div>
                 </li>
-                {/*
-                <li>
-                  <div className="h-[100px] w-[100px] flex justify-center items-center bg-gradient-to-b from-zinc-100 to-purple-500 border-2 border-zinc-700 relative hover:scale-105 duration-300">
-                    <div className="p-2 bg-zinc-700 flex justify-center items-center w-[20px] h-[20px] text-sm font-bold text-white absolute top-0 left-0">3</div>
-                    <img className="w-[50px]" src="./src/assets/amethyst.png" />
-                  </div>
-                  <p className="text-sm text-center font-semibold">Ametista</p>
-                  <div className="flex items-center justify-center gap-1 mt-1">
-                    <img className="w-[20px]" src="./src/assets/coin.png" />
-                    <p className="text-sm text-end font-bold">30</p>
-                  </div>
-                </li>
-                */}
               </ul>
               <div onClick={handleClaim} className="lg:absolute lg:bottom-2 right-2 flex gap-2 items-center px-4 py-2 bg-green-600 border-6 border-green-800 hover:bg-green-700 hover:border-green-900 duration-300 mt-2">
                 <p className="font-bold text-white">Obter recompensa</p>
