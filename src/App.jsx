@@ -16,7 +16,7 @@ import { IoMdEye } from "react-icons/io"
 const sprites = Array.from({ length: 21 }, (_, i) => `sprite_${i + 1}.png`);
 
 const images = Array.from({ length: 21 }, (_, i) =>
-  `http://cdn.rafaeldantas.dev.br/sprites/sprite_${i + 1}.png`
+  `https://cdn.rafaeldantas.dev.br/sprites/sprite_${i + 1}.png`
 );
 
 function App() {
@@ -113,7 +113,7 @@ function App() {
     mining_sound.current.pause();
     som1.play();
     cancelAnimationFrame(character_animation_id.current);
-    sprite_image.current.src = 'http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png';
+    sprite_image.current.src = 'https://cdn.rafaeldantas.dev.br/sprites/sprite_1.png';
 
     setIsLoading(false);
     setDatas({ startDate: new Date(), targetDate: new Date() });
@@ -224,13 +224,13 @@ function App() {
   }
 
   async function carregarChunk() {
-    const response = await fetch('http://api-garimpim.vercel.app/get_chunk');
+    const response = await fetch('https://api-garimpim.vercel.app/get_chunk');
     const chunk = await response.json();
     setBlocks(chunk.map(bloco => { return { ...bloco, selected: false } }));
   }
 
   async function gerarChunk() {
-    const response = await fetch('http://api-garimpim.vercel.app/gerar_chunk');
+    const response = await fetch('https://api-garimpim.vercel.app/gerar_chunk');
     const chunk = await response.json();
     setBlocks(chunk.map(bloco => { return { ...bloco, selected: false } }));
   }
@@ -249,7 +249,7 @@ function App() {
 
   function animate(timestamp) {
     if (timestamp - lastFrameTime.current >= frameDelay) {
-      sprite_image.current.src = `http://cdn.rafaeldantas.dev.br/sprites/${sprites[sprite_frame.current]}`;
+      sprite_image.current.src = `https://cdn.rafaeldantas.dev.br/sprites/${sprites[sprite_frame.current]}`;
       sprite_frame.current = (sprite_frame.current + 1) % sprites.length;
       lastFrameTime.current = timestamp; // Atualiza o tempo do último frame
     }
@@ -257,7 +257,7 @@ function App() {
   }
 
   async function checarStatus() {
-    const response = await fetch('http://api-garimpim.vercel.app/checar_status');
+    const response = await fetch('https://api-garimpim.vercel.app/checar_status');
     const data = await response.json();
 
     switch (data.status) {
@@ -335,13 +335,13 @@ function App() {
             </div>
             {/* moedas */}
             <div className="flex items-center gap-2">
-              <img className="w-[30px]" src="http://cdn.rafaeldantas.dev.br/coin.png" />
+              <img className="w-[30px]" src="https://cdn.rafaeldantas.dev.br/coin.png" />
               <p className="font-extrabold text-white text-sm">{coins}</p>
             </div>
           </div>
           <div className="flex lg:flex-row flex-col justify-center lg:gap-16 gap-8 mt-4">
             <div className="flex flex-col items-center gap-4">
-              <img ref={sprite_image} src='http://cdn.rafaeldantas.dev.br/sprites/sprite_1.png' className={`-scale-x-100 w-[280px] ${!isLoading ? 'hidden' : null} lg:block my-2`} />
+              <img ref={sprite_image} src='https://cdn.rafaeldantas.dev.br/sprites/sprite_1.png' className={`-scale-x-100 w-[280px] ${!isLoading ? 'hidden' : null} lg:block my-2`} />
               {/* Skills */}
               <div className={`flex flex-col gap-2 ${isLoading ? 'hidden lg:flex' : null}`}>
                 <div>
