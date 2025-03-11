@@ -36,7 +36,7 @@ function App() {
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const [isChunkLoading, setIsChunkLoading] = useState(false);
   const [isReward, setIsReward] = useState(false);
-  const [reward, setReward] = useState(1);
+  const [reward, setReward] = useState([]);
   const [selectedBlock, setSelectedBlock] = useState(null);
 
   const [datas, setDatas] = useState();
@@ -155,7 +155,7 @@ function App() {
   }
 
   function handleSelectBlock(block) {
-    if (!isLoading && block.enabled && !isReward) {
+    if (!isLoading && block.enabled && !reward.length) {
       setSelectedBlock(block);
       setBlocks(prev =>
         prev.map(b =>
@@ -171,9 +171,7 @@ function App() {
     const response = await fetch('https://api-garimpim.vercel.app/reivindicar');
     const data = await response.json();
     coin_sound.play();
-    setIsReward(false);
-    setCoins(prev => prev + ((gold_value * reward) * multiplier));
-    setReward(0);
+    setReward([]);
   }
 
   function converterSegundosEmTexto(segundos) {
@@ -267,7 +265,9 @@ function App() {
         ativarMineracao();
         break;
       case 'recompensa':
-        setIsReward(true);
+        setReward(data.drops);
+        data.drops.map(item => console.log(item.nome));
+        console.log(data.drops)
         break;
     }
   }
@@ -308,7 +308,7 @@ function App() {
     if (isMobile) {
       window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     }
-  }, [selectedBlock, isReward])
+  }, [selectedBlock, reward])
 
   if (isLoadingResources) {
     return (
@@ -323,9 +323,10 @@ function App() {
 
   return (
     <>
-      <div className='text-white min-h-[100vh] bg-zinc-700 flex flex-col items-center lg:gap-4 relative w-screen overflow-hidden'>
+      <div className='text-black min-h-[100vh] bg-zinc-300 flex flex-col items-center lg:gap-4 relative w-screen overflow-hidden'>
         <div className="lg:px-4 lg:pb-0 pb-8">
-          <div className="flex justify-between w-full bg-zinc-800 py-2 px-8">
+          {/* Menu */}
+          <div className="flex justify-between w-full bg-zinc-800 py-4 px-8 fixed top-0 left-0">
             <div className="flex gap-2">
               <div className="flex bg-zinc-700 justify-center items-center p-2 hover:bg-zinc-600 duration-300"><FaUser size={30} color="white" /></div>
               <div className="flex justify-center items-center p-2 hover:bg-zinc-600 duration-300"><BsBackpack size={30} color="white" /></div>
@@ -339,7 +340,7 @@ function App() {
               <p className="font-extrabold text-white text-sm">{coins}</p>
             </div>
           </div>
-          <div className="flex lg:flex-row flex-col justify-center lg:gap-16 gap-8 mt-4">
+          <div className="flex lg:flex-row flex-col justify-center lg:gap-16 gap-8 mt-[120px]">
             <div className="flex flex-col items-center gap-4">
               <img ref={sprite_image} src='https://cdn.rafaeldantas.dev.br/sprites/sprite_1.png' className={`-scale-x-100 w-[280px] ${!isLoading ? 'hidden' : null} lg:block my-2`} />
               {/* Skills */}
@@ -347,28 +348,28 @@ function App() {
                 <div>
                   <p className="font-bold py-1 text-sm">Multiplicador:</p>
                   <ul className="flex gap-1 text-zinc-900">
-                    <li onClick={() => setMultiplier(1)} className={`p-2 border-2 hover:bg-zinc-600 hover:text-white font-semibold text-[12px] ${multiplier === 1 ? "bg-zinc-800 border-zinc-950 text-white" : "bg-zinc-300 border-zinc-400"}`}>1x</li>
-                    <li onClick={() => setMultiplier(2)} className={`p-2 border-2 hover:bg-zinc-600 hover:text-white font-semibold text-[12px] ${multiplier === 2 ? "bg-zinc-800 border-zinc-950 text-white" : "bg-zinc-300 border-zinc-400"}`}>2x</li>
-                    <li onClick={() => setMultiplier(5)} className={`p-2 border-2 hover:bg-zinc-600 hover:text-white font-semibold text-[12px] ${multiplier === 5 ? "bg-zinc-800 border-zinc-950 text-white" : "bg-zinc-300 border-zinc-400"}`}>5x</li>
+                    <li onClick={() => setMultiplier(1)} className={`h-11 w-11 flex justify-center items-center border-2 hover:bg-zinc-600 hover:text-white font-semibold text-[12px] ${multiplier === 1 ? "bg-zinc-800 border-zinc-950 text-white" : "bg-zinc-200 border-zinc-400"} rounded-md`}>1x</li>
+                    <li onClick={() => setMultiplier(2)} className={`h-11 w-11 flex justify-center items-center border-2 hover:bg-zinc-600 hover:text-white font-semibold text-[12px] ${multiplier === 2 ? "bg-zinc-800 border-zinc-950 text-white" : "bg-zinc-200 border-zinc-400 rounded-md"}`}>2x</li>
+                    <li onClick={() => setMultiplier(5)} className={`h-11 w-11 flex justify-center items-center border-2 hover:bg-zinc-600 hover:text-white font-semibold text-[12px] ${multiplier === 5 ? "bg-zinc-800 border-zinc-950 text-white" : "bg-zinc-200 border-zinc-400 rounded-md"}`}>5x</li>
                   </ul>
                 </div>
                 <div>
                   <p className="font-bold py-1 text-sm">Habilidades:</p>
                   <ul className="flex gap-1">
-                    <li className="p-2 bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><GiMining size={20} className="group-hover:text-white text-zinc-700" /></li>
-                    <li className="p-2 bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><PiSpeedometerFill size={20} className="group-hover:text-white text-zinc-700" /></li>
-                    <li className="p-2 bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><PiCloverFill size={20} className="group-hover:text-white text-zinc-700" /></li>
-                    <li className="p-2 bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><IoMdEye size={20} className="group-hover:text-white text-zinc-700" /></li>
-                    <li className="p-2 bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><GiDynamite size={20} className="group-hover:text-white text-zinc-700" /></li>
+                    <li className="h-11 w-11 flex justify-center items-center bg-zinc-200 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><GiMining size={20} className="group-hover:text-white text-zinc-700" /></li>
+                    <li className="h-11 w-11 flex justify-center items-center bg-zinc-200 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><PiSpeedometerFill size={20} className="group-hover:text-white text-zinc-700" /></li>
+                    <li className="h-11 w-11 flex justify-center items-center bg-zinc-200 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><PiCloverFill size={20} className="group-hover:text-white text-zinc-700" /></li>
+                    <li className="h-11 w-11 flex justify-center items-center bg-zinc-200 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><IoMdEye size={20} className="group-hover:text-white text-zinc-700" /></li>
+                    <li className="h-11 w-11 flex justify-center items-center bg-zinc-200 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><GiDynamite size={20} className="group-hover:text-white text-zinc-700" /></li>
                   </ul>
                 </div>
                 <div>
                   <p className="font-bold py-1 text-sm">Picareta:</p>
                   <ul className="flex gap-1">
-                    <li className="bg-zinc-400 border-4 border-zinc-500 hover:bg-green-900 duration-300 group"><img src="https://cdn.rafaeldantas.dev.br/pickaxe_2.png" className="w-[30px] p-1" /></li>
-                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><img src="https://cdn.rafaeldantas.dev.br/netherite-pickaxe.png" className="w-[30px] p-1" /></li>
-                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group"><img src="https://cdn.rafaeldantas.dev.br/pickaxe_1.png" className="w-[30px] p-1" /></li>
-                    <li className="bg-green-600 border-4 border-green-800 hover:bg-green-900 duration-300 group flex justify-center items-center w-[35px]"><FaExchangeAlt color="white" /></li>
+                    <li className="bg-zinc-400 border-4 border-zinc-500 hover:bg-green-900 duration-300 group rounded-md"><img src="https://cdn.rafaeldantas.dev.br/pickaxe_2.png" className="w-[30px] p-1" /></li>
+                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><img src="https://cdn.rafaeldantas.dev.br/netherite-pickaxe.png" className="w-[30px] p-1" /></li>
+                    <li className="bg-zinc-300 border-2 border-zinc-400 hover:bg-green-900 duration-300 group rounded-md"><img src="https://cdn.rafaeldantas.dev.br/pickaxe_1.png" className="w-[30px] p-1" /></li>
+                    <li className="bg-green-600 border-4 border-green-800 hover:bg-green-900 duration-300 group flex justify-center items-center w-[35px] rounded-md"><FaExchangeAlt color="white" /></li>
                   </ul>
                 </div>
               </div>
@@ -376,9 +377,9 @@ function App() {
 
             {/* blocos */}
             <div className={`${isLoading ? 'hidden lg:block' : null} lg:block flex flex-col items-center`}>
-              <ul className={`grid grid-cols-8 lg:w-auto w-[90vw] gap-1 p-2 bg-zinc-300 border-4 border-zinc-500 ${isChunkLoading ? 'hidden' : null}`}>
+              <ul className={`grid grid-cols-8 lg:w-auto w-[90vw] gap-1 p-2 bg-zinc-400 border-4 border-zinc-500 ${isChunkLoading ? 'hidden' : null} rounded-md`}>
                 {blocks.map(block => {
-                  return <li key={block.posicao + '-bloco'} className={`lg:h-[45px] lg:w-[45px] w-auto bg-green-700 hover:scale-110 duration-300 border-4 border-zinc-700 hover:border-green-600 overflow-hidden ${!block.enabled ? 'bg-zinc-300 border-none' : null} ${isLoading && block.selected ? 'animate-pulse' : null}`} onClick={() => handleSelectBlock(block)}>
+                  return <li key={block.posicao + '-bloco'} className={`lg:h-[45px] lg:w-[45px] w-auto bg-green-700 hover:scale-110 duration-300 border-4 border-zinc-700 hover:border-green-600 overflow-hidden rounded-md ${!block.enabled ? 'bg-zinc-400 border-none' : null} ${isLoading && block.selected ? 'animate-pulse' : null}`} onClick={() => handleSelectBlock(block)}>
                     <img className={`lg:w-[45px] w-full ${block.selected || !block.enabled ? 'opacity-0' : null}`} src={`${block.url_imagem}`}></img>
                   </li>
                 })}
@@ -389,9 +390,9 @@ function App() {
                   </li>
                 })}
               </ul>
-              <div className="p-2 bg-zinc-800 w-[250px] flex items-center gap-2 mt-1">
+              <div className="p-2 bg-zinc-800 w-[250px] flex items-center gap-2 mt-2 rounded-md">
                 <BsFillGrid3X3GapFill onClick={handleClickRandomChunk} size={40} className="p-2 bg-green-700 hover:bg-green-800 duration-300 text-white" />
-                <div>
+                <div className="text-white">
                   <p className="text-sm">Recompensa total: <span className="font-bold">{totalRewards}</span></p>
                   <p className="text-sm">Preço total: <span className="font-bold">{totalPrice}</span></p>
                 </div>
@@ -406,7 +407,7 @@ function App() {
               <p className="font-bold text-zinc-300">Minerando bloco de {selectedBlock.nome}</p>
               <div className="flex gap-2 items-center">
                 <ul className="flex flex-col gap-2 mt-1">
-                  <li id="loading_bar" className="lg:w-[600px] w-[90vw] box-content bg-zinc-100 border-4 border-green-800 animate-pulse">
+                  <li id="loading_bar" className="lg:w-[600px] w-[90vw] box-content bg-zinc-100 border-4 border-green-800 animate-pulse rounded-md">
                     <div id="progressBar" className={`bg-green-500 h-[40px] relative`}>
                     </div>
                   </li>
@@ -426,8 +427,8 @@ function App() {
         {/* Barra de informação */}
         {
           selectedBlock && !isLoading ?
-            <div className="relative lg:w-[750px] w-[90vw] lg:p-6 p-4 bg-zinc-300 drop-shadow-md border-zinc-700 flex flex-col lg:flex-row gap-4 mt-2 text-zinc-900 lg:my-0 my-8">
-              <img src={selectedBlock.url_imagem} className="border-8 border-zinc-700 w-[120px] h-[120px]" />
+            <div className="relative lg:w-[750px] w-[90vw] lg:p-8 p-4 bg-zinc-200 drop-shadow-md border-zinc-700 flex flex-col lg:flex-row gap-4 mt-2 text-zinc-900 lg:my-0 my-8 rounded-md">
+              <img src={selectedBlock.url_imagem} className="border-8 border-zinc-700 w-[120px] h-[120px] rounded-md" />
               <div className="flex-1">
                 <p className="font-bold text-2xl text-zinc-800">{selectedBlock.posicao} - {selectedBlock.nome}</p>
                 <p className="text-sm">Raridade: {selectedBlock.raridade}</p>
@@ -443,7 +444,7 @@ function App() {
               <div className="absolute top-2 right-2 flex gap-2 items-center p-1 bg-zinc-600 border-2 border-zinc-800 hover:bg-zinc-700 hover:border-zinc-900 duration-300">
                 <FaInfo size={15} color="white" />
               </div>
-              <div onClick={handleMining} className="lg:absolute lg:bottom-2 lg:right-2 flex gap-2 items-center px-4 py-2 bg-green-600 border-6 border-green-800 hover:bg-green-700 hover:border-green-900 duration-300">
+              <div onClick={handleMining} className="lg:absolute lg:bottom-2 lg:right-2 flex gap-2 items-center px-4 py-2 bg-green-600 border-6 border-green-800 hover:bg-green-700 hover:border-green-900 duration-300 rounded-md">
                 <p className="font-bold text-white">Minerar</p>
                 <GiWarPick size={25} color="white" />
               </div>
@@ -457,23 +458,25 @@ function App() {
 
         {/* Recompensa */}
         {
-          isReward ?
-            <div className="relative lg:w-[750px] w-[90vw] p-4 bg-zinc-300 drop-shadow-md text-zinc-900 mb-8">
+          reward.length > 0 ?
+            <div className="relative lg:w-[750px] w-[90vw] p-4 bg-zinc-200 drop-shadow-md text-zinc-900 mb-8 rounded-md">
               <p className="text-2xl font-bold text-zinc-800">Recompensa:</p>
               <ul className="flex gap-2 mt-2">
-                <li className="lg:block flex gap-2">
-                  <div className="h-[100px] w-[100px] flex justify-center items-center bg-gradient-to-b from-zinc-100 to-amber-300 border-2 border-zinc-700 relative hover:scale-105 duration-300">
-                    <div className="p-2 bg-zinc-700 flex justify-center items-center w-[20px] h-[20px] text-sm font-bold text-white absolute top-0 left-0">{reward}</div>
-                    <img className="w-[50px]" src="https://cdn.rafaeldantas.dev.br/gold-ingot.png" />
-                  </div>
-                  <div>
-                    <p className="text-sm lg:text-center font-semibold">Ouro</p>
-                    <div className="flex lg:items-center lg:justify-center gap-1 mt-1">
-                      <img className="w-[20px]" src="https://cdn.rafaeldantas.dev.br/coin.png" />
-                      <p className="text-sm text-end font-bold">{(reward * gold_value) * multiplier}</p>
+                {reward.map(item => {
+                  return (<li className="lg:block flex gap-2">
+                    <div className="h-[100px] w-[100px] flex justify-center items-center bg-gradient-to-b from-zinc-100 to-zinc-400 border-2 border-zinc-700 relative hover:scale-105 duration-300 rounded-md">
+                      <div className="p-2 bg-zinc-700 flex justify-center items-center w-[20px] h-[20px] text-sm font-bold text-white absolute top-0 left-0">{item.quantidade}</div>
+                      <img className="w-[50px]" src={item.url_imagem} />
                     </div>
-                  </div>
-                </li>
+                    <div>
+                      <p className="text-[12px] w-[50px] font-semibold">{item.nome}</p>
+                      <div className="flex lg:items-center lg:justify-center gap-1 mt-1">
+                        <img className="w-[20px]" src="https://cdn.rafaeldantas.dev.br/coin.png" />
+                        <p className="text-sm text-end font-bold">{item.preco * multiplier}</p>
+                      </div>
+                    </div>
+                  </li>);
+                })}
               </ul>
               <div onClick={handleClaim} className="lg:absolute lg:bottom-2 right-2 flex gap-2 items-center px-4 py-2 bg-green-600 border-6 border-green-800 hover:bg-green-700 hover:border-green-900 duration-300 mt-2">
                 <p className="font-bold text-white">Obter recompensa</p>
@@ -482,12 +485,6 @@ function App() {
             </div>
             : null
         }
-        <div className="absolute hidden lg:flex top-8 left-8 w-[250px] h-[92vh] bg-zinc-800 items-center justify-center">
-          <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
-        </div>
-        <div className="absolute hidden lg:flex top-8 right-8 w-[250px] h-[92vh] bg-zinc-800 items-center justify-center">
-          <p className="text-white text-4xl transform rotate-270 font-bold">Google Ads</p>
-        </div>
         <div
           className={`fixed w-full h-screen lg:absolute lg:top-4 lg:right-4 lg:w-[600px] lg:h-auto p-8 border-8 border-zinc-950 bg-zinc-900 flex lg:flex-row lg:justify-normal items-center flex-col justify-center gap-4 duration-1000 transition-transform ${isNotificationVisible ? 'translate-x-0' : 'translate-x-[620px]'
             }`}
